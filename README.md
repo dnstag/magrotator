@@ -1,0 +1,1 @@
+MagRotator is a software for use with stepping motors, to control the variable capacitor of a magloop antenna.
