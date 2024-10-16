@@ -1,4 +1,4 @@
-idf_component_register(SRCS "httpd.c" "wifi.c" "main.c"
+idf_component_register(SRCS "calc.c" "httpd.c" "wifi.c" "main.c"
                     INCLUDE_DIRS ".")
 
 spiffs_create_partition_image(spiffs ../spiffs FLASH_IN_PROJECT)
