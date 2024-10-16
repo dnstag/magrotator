@@ -35,6 +35,8 @@
 #include <esp_event.h>
 #include <esp_system.h>
 #include <esp_log.h>
+#include <cJSON.h>
+#include "wifi.h"
 
 // Tag for logging
 static const char *TAG = "wifi.c";
@@ -54,6 +56,35 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t e
         wifi_event_sta_connected_t* event = (wifi_event_sta_connected_t*) event_data;
         ESP_LOGI(TAG, "WIFI_EVENT_STA_CONNECTED received: Connected to: %s", event->ssid);
     }
+}
+
+void read_wifi_config(const char* file_path, char* ssid, char* password) {
+    FILE* file = fopen(file_path, "r");
+    if (file == NULL) {
+        ESP_LOGE(TAG, "Failed to open config file");
+        return;
+    }
+    
+    fseek(file, 0, SEEK_END);
+    long length = ftell(file);
+    fseek(file, 0, SEEK_SET);
+    
+    char* data = malloc(length);
+    fread(data, 1, length, file);
+    fclose(file);
+    
+    cJSON* json = cJSON_Parse(data);
+    if (json == NULL) {
+        ESP_LOGE(TAG, "Failed to parse JSON");
+        free(data);
+        return;
+    }
+    
+    strcpy(ssid, cJSON_GetObjectItem(json, "ssid")->valuestring);
+    strcpy(password, cJSON_GetObjectItem(json, "password")->valuestring);
+    
+    cJSON_Delete(json);
+    free(data);
 }
 
 // Function to initialize Wi-Fi

@@ -38,6 +38,7 @@ extern "C" {
 
 extern char g_ip_adress[16];
 
+void read_wifi_config(const char* file_path, char* ssid, char* password);
 void wifi_init(const char* ssid, const char* password);
 
 #ifdef __cplusplus

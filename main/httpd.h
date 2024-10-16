@@ -1,5 +1,5 @@
 /*
- * main.c - This file is part of MagRotator.
+ * httpd.c - This file is part of MagRotator.
  *
  * Copyright (C) 2024, Yannick Seibert. All rights reserved.
  *
@@ -29,43 +29,15 @@
  * SUCH DAMAGE.
  */
 
-#include <esp_log.h>
-#include <esp_event.h>
-#include <esp_spiffs.h>
-#include "httpd.h"
-#include "wifi.h"
+#pragma once
+#include <esp_http_server.h>
 
-// Tag for logging
-static const char *TAG = "main.c";
-char adress[16];
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void spiffs_init(void) {
-      esp_vfs_spiffs_conf_t conf = {
-        .base_path = "/spiffs",
-        .partition_label = NULL,
-        .max_files = 5,
-        .format_if_mount_failed = true
-    };
-    ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
-    size_t total = 0, used = 0;
-    ESP_ERROR_CHECK(esp_spiffs_info(NULL, &total, &used));
-    ESP_LOGI(TAG,"SPIFFS Total bytes %d, of which %d are used", total, used);
+httpd_handle_t start_webserver(void);
+
+#ifdef __cplusplus
 }
-
-void app_main(void) {
-    char ssid[32] = {0};
-    char password[64] = {0};
-
-    spiffs_init();
-
-    read_wifi_config("/spiffs/wifi.json", ssid, password);    
-    wifi_init(ssid, password);
-    ESP_LOGI(TAG, "Wi-Fi setup completed");
-    
-    start_webserver();
-
-    for(;;) {
-        ESP_LOGI(TAG,"Resetting watchdog...");
-        vTaskDelay(1000);
-    }
-}
+#endif
